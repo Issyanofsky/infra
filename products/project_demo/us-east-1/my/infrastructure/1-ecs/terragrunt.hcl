@@ -17,35 +17,39 @@ include "root" {
   path = find_in_parent_folders()
 }
 
+dependency "vpc" {
+  config_path = "../0-vpc" # Path to the VPC Terragrunt configuration
+}
+
 inputs = {
   # VPC and Subnet configuration
-  vpc_id                    = var.vpc_id
-  public_subnet_ids          = var.public_subnet_ids
-  private_subnet_ids         = var.private_subnet_ids
-  region                     = local.region
+  vpc_id             = dependency.vpc.outputs.vpc_id
+  public_subnet_ids  = dependency.vpc.outputs.public_subnet_ids
+  private_subnet_ids = dependency.vpc.outputs.private_subnet_ids
+  region             = local.region
 
   # ECS Cluster Configuration
-  cluster_name               = "${local.env_vars.project}-${local.env}-ecs-cluster"
-  enable_ec2_instances       = true
-  enable_fargate             = true
-  ec2_instance_type          = "t2.micro"  # EC2 instance type for EC2 worker nodes (adjust as needed)
+  cluster_name         = "${local.env_vars.project}-${local.env}-ecs-cluster"
+  enable_ec2_instances = true
+  enable_fargate       = true
+  ec2_instance_type    = "t2.micro" # EC2 instance type for EC2 worker nodes (adjust as needed)
 
   # IAM Role for EC2 instances in ECS cluster
-  ecs_instance_role          = aws_iam_role.ecs_instance_role.arn
+  ecs_instance_role = aws_iam_role.ecs_instance_role.arn
 
   # Fargate Task Definition (Task roles, container definitions etc.)
-  task_definition_name       = "${local.env_vars.project}-${local.env}-fargate-task"
-  container_image            = "your-container-image-url"  # Container image (can be ECR or DockerHub)
+  task_definition_name = "${local.env_vars.project}-${local.env}-fargate-task"
+  container_image      = "your-container-image-url" # Container image (can be ECR or DockerHub)
 
   # ECS Service Configuration
-  fargate_task_count         = 1   # Number of Fargate tasks
-  ec2_task_count             = 2   # Number of EC2 instances running in ECS
+  fargate_task_count = 1 # Number of Fargate tasks
+  ec2_task_count     = 2 # Number of EC2 instances running in ECS
 
   # Security Group Configuration
-  ecs_security_group_id      = aws_security_group.ecs_security_group.id
+  ecs_security_group_id = aws_security_group.ecs_security_group.id
 
   # Tags
-  tags                       = local.merged_tags
+  tags = local.merged_tags
 }
 
 # IAM Roles for ECS EC2 Instances and Fargate Tasks
@@ -56,12 +60,12 @@ resource "aws_iam_role" "ecs_instance_role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action    = "sts:AssumeRole",
+        Action = "sts:AssumeRole",
         Principal = {
           Service = "ec2.amazonaws.com"
         },
-        Effect    = "Allow",
-        Sid       = ""
+        Effect = "Allow",
+        Sid    = ""
       },
     ]
   })
@@ -74,12 +78,12 @@ resource "aws_iam_role" "ecs_fargate_role" {
     Version = "2012-10-17",
     Statement = [
       {
-        Action    = "sts:AssumeRole",
+        Action = "sts:AssumeRole",
         Principal = {
           Service = "ecs-tasks.amazonaws.com"
         },
-        Effect    = "Allow",
-        Sid       = ""
+        Effect = "Allow",
+        Sid    = ""
       },
     ]
   })
@@ -137,11 +141,11 @@ resource "aws_ecs_service" "fargate_service" {
 
 # EC2 Task Definition for ECS EC2 Instances
 resource "aws_ecs_task_definition" "ec2_task_definition" {
-  family                   = "${local.env_vars.project}-${local.env}-ec2-task-definition"
-  network_mode             = "bridge"
-  execution_role_arn       = aws_iam_role.ecs_instance_role.arn
-  task_role_arn            = aws_iam_role.ecs_instance_role.arn
-  container_definitions    = jsonencode([
+  family             = "${local.env_vars.project}-${local.env}-ec2-task-definition"
+  network_mode       = "bridge"
+  execution_role_arn = aws_iam_role.ecs_instance_role.arn
+  task_role_arn      = aws_iam_role.ecs_instance_role.arn
+  container_definitions = jsonencode([
     {
       name      = "my-container"
       image     = var.container_image
@@ -154,11 +158,11 @@ resource "aws_ecs_task_definition" "ec2_task_definition" {
 
 # Fargate Task Definition
 resource "aws_ecs_task_definition" "fargate_task_definition" {
-  family                   = "${local.env_vars.project}-${local.env}-fargate-task-definition"
-  network_mode             = "awsvpc"
-  execution_role_arn       = aws_iam_role.ecs_fargate_role.arn
-  task_role_arn            = aws_iam_role.ecs_fargate_role.arn
-  container_definitions    = jsonencode([
+  family             = "${local.env_vars.project}-${local.env}-fargate-task-definition"
+  network_mode       = "awsvpc"
+  execution_role_arn = aws_iam_role.ecs_fargate_role.arn
+  task_role_arn      = aws_iam_role.ecs_fargate_role.arn
+  container_definitions = jsonencode([
     {
       name      = "my-container"
       image     = var.container_image
