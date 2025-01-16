@@ -14,11 +14,17 @@ locals {
 }
 
 include "root" {
-  path = find_in_parent_folders()
+  path = find_in_parent_folders("root.hcl")
 }
 
 dependency "vpc" {
   config_path = "../0-vpc" # Path to the VPC Terragrunt configuration
+   mock_outputs = {
+        vpc_id = "some-id"
+        public_subnet_ids = ["10.0.101.0/16", "10.0.102,0/16"]
+        private_subnet_ids = ["10.0.1.0/16", "10.0.2,0/16"]
+    }
+
 }
 
 inputs = {
