@@ -1,0 +1,60 @@
+# terragrunt.hcl for ECS Cluster with EC2 and Fargate
+
+terraform {
+  source = "git::https://github.com/terraform-aws-modules/terraform-aws-ecs.git?ref=v5.12.0"
+}
+
+# Local variables to read configurations from parent folders
+locals {
+  env_vars    = (read_terragrunt_config(find_in_parent_folders("env.hcl"))).locals
+  common_tags = (read_terragrunt_config(find_in_parent_folders("common_tags.hcl"))).locals
+  merged_tags = merge(local.env_vars, local.common_tags.common_tags)
+  env         = local.env_vars.short_env
+  region      = (read_terragrunt_config(find_in_parent_folders("region.hcl"))).locals.aws_region
+}
+
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+dependency "vpc" {
+  config_path = "../0-vpc" # Path to the VPC Terragrunt configuration
+   mock_outputs = {
+        vpc_id = "some-id"
+        public_subnet_ids = ["10.0.101.0/16", "10.0.102,0/16"]
+        private_subnet_ids = ["10.0.1.0/16", "10.0.2,0/16"]
+    }
+
+}
+
+inputs = {
+  # VPC and Subnet configuration
+  vpc_id             = dependency.vpc.outputs.vpc_id
+  public_subnet_ids  = dependency.vpc.outputs.public_subnet_ids
+  private_subnet_ids = dependency.vpc.outputs.private_subnet_ids
+  region             = local.region
+
+  # ECS Cluster Configuration
+  cluster_name         = "${local.env_vars.project}-${local.env}-ecs-cluster"
+  enable_ec2_instances = true
+  enable_fargate       = true
+  ec2_instance_type    = "t2.micro" # EC2 instance type for EC2 worker nodes (adjust as needed)
+
+  # IAM Role for EC2 instances in ECS cluster
+  ecs_instance_role = aws_iam_role.ecs_instance_role.arn
+
+  # Fargate Task Definition (Task roles, container definitions etc.)
+  task_definition_name = "${local.env_vars.project}-${local.env}-fargate-task"
+  container_image      = "your-container-image-url" # Container image (can be ECR or DockerHub)
+
+  # ECS Service Configuration
+  fargate_task_count = 1 # Number of Fargate tasks
+  ec2_task_count     = 2 # Number of EC2 instances running in ECS
+
+  # Security Group Configuration
+  ecs_security_group_id = aws_security_group.ecs_security_group.id
+
+  # Tags
+  tags = local.merged_tags
+}
+
