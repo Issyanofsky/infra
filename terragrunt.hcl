@@ -32,7 +32,7 @@ generate "provider" {
   contents  = <<EOF
         provider "aws" {
         profile = "${local.aws_profile}"
-        region = "{$local.region}"
+        region = "${local.region}"
         }
       EOF
 }
@@ -44,7 +44,7 @@ generate "backend" {
   contents  = <<EOF
 terraform {
     backend "s3" {
-        bucket  = "terraform-state-issy-$(local.account_id)"
+        bucket  = "terraform-state-issy-${local.account_id}"
         key     = "${get_path_from_repo_root()}/terraform.tfstate"
         region  = "${local.region}"
         dynamodb_table = "terraform-lock-table-issy"
