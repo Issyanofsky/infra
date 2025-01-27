@@ -6,6 +6,7 @@
 
 this is a deployment for a ECS cluster with EC2 containers and FARGATE.
 the deployment is in order marked in the name of the files to impliment in the "right" order (from 0 to 7):
+
     - 0-vpc - create a VPC in AWS.
     - 1-securitygroup - create a Security group for the VPC.
     - 2-im_role - create an IMRole for the EC2 instances.
