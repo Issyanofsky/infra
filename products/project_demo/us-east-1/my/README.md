@@ -1,6 +1,6 @@
 <div align="center">
 
-# **Deploy ECS cluster with Fargate & EC2 Container Instances (2-t2.micro)**
+# **Deploy ECS cluster with Fargate & EC2 Container Instances**
 
 </div>
 
