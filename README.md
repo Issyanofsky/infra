@@ -15,7 +15,7 @@ the folders are:
 
 **0-vpc** - deploying a private VPC. using a module from terraform repository that create a VPC (https://registry.terraform.io/modules/terraform-aws-modules/vpc/aws/latest).
 
-**1-eks** - deploying eks cluster with 2 nodes (t2.micro). the deployment of the EKS  was done using a module from terraform repository
+**1-eks** - deploying eks cluster with 2 nodes (t2.medium - argocd need more resources then t2.micro). the deployment of the EKS  was done using a module from terraform repository
 (https://registry.terraform.io/modules/terraform-aws-modules/eks/aws/latest).
 
 **2-nlb:**
