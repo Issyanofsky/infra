@@ -1,4 +1,14 @@
-# eks
+<div align="center">
+
+# **Deploy EKS cluster with managed nodegorups**
+
+![Rick Sanchez](https://rickandmortyapi.com/api/character/avatar/1.jpeg)
+
+</div>
+
+
+# task C 
+
 instalation of the EKS cluster with 2 nodes and delpoying ARGO-CD. the setting is set to work on HTTP.
 the instalation is in folder infrastructure and should be installed in the order set by the number on the folders.
 the folders are:
