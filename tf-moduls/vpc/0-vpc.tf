@@ -1,13 +1,3 @@
-
-
-locals {
-  availability_zones = ["${var.aws_region}a", "${var.aws_region}b"]
-}
-
-terraform {
-  backend "local" {}
-}
-
 # VPC
 resource "aws_vpc" "vpc" {
   cidr_block           = var.vpc_cidr
