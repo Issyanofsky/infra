@@ -1,5 +1,5 @@
 # eks
-instalation of the EKS cluster with 2 nodes and delpoying ARGO-CD.
+instalation of the EKS cluster with 2 nodes and delpoying ARGO-CD. the setting is set to work on HTTP.
 the instalation is in folder infrastructure and should be installed in the order set by the number on the folders.
 the folders are:
 
