@@ -17,7 +17,13 @@ infrastructure ([infrastructure folder](infrastructure)):
 - [5-nlb](infrastructure/5-nlb) - create a NLB load balancer.
 - [6-ecs](infrastructure/6-ecs) - create the ECS cluster with EC2 instances and FARGATE.
 
-running the nginx ([backend folder](/backend)):
+running the nginx:
 
 - [7-service_task](backend/service_task_nginx_ecs/) - create a service and task definition for deploying a nginx server and a cloudWatch container.
+
+pictures after running the project:
+
+**nginx deploymeny:**
+
+![NGINX](/pictures/nginx_on_NLB.gif)
 
