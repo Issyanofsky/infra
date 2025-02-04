@@ -35,10 +35,10 @@ Pods deployment:
 ![pods](/pictures/eks_pods.gif)
 
 Ingress:
-![ingress](/pictures/eks_ingtress.gif)
+![ingress](/pictures/eks_ingress.gif)
 
-VPC
-![VPC](/pictures/eks_vpc.gif)
+SVC
+![SVC](/pictures/eks_svc.gif)
 
 Argo-cd web:
 ![Argo-cd](/pictures/eks_argocd_web.gif)
