@@ -1,7 +1,7 @@
 locals {
-  env      = "DEVELOPMENT"
-  short_env = "DEV"
+  env      = "Integration"
+  short_env = "INT"
   project  = "project-nginx"
   region = "us-east-1"
-  cluster_name = "project-nginx-Dev-ECS-cluster"
+  cluster_name = "project-nginx-INT-ECS-cluster"
 }
