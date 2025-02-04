@@ -2,7 +2,7 @@
 
 # **Deploy EKS cluster with managed nodegorups**
 
-![Rick Sanchez](pictures/eks_argocd_web.gif)
+![Rick Sanchez](/pictures/eks_argocd_web.gif)
 
 </div>
 
