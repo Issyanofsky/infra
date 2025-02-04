@@ -2,7 +2,7 @@
 
 # **Deploy EKS cluster with managed nodegorups**
 
-![Rick Sanchez](https://rickandmortyapi.com/api/character/avatar/1.jpeg)
+![Rick Sanchez](pictures/eks_argocd_web.gif)
 
 </div>
 
