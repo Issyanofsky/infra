@@ -2,7 +2,7 @@
 
 # **Deploy EKS cluster with managed nodegorups**
 
-![Rick Sanchez](/pictures/eks_argocd_web.gif)
+![argo-cd](/pictures/eks_argocd_web.gif)
 
 </div>
 
@@ -29,3 +29,16 @@ the folders are:
 **3-argocd_install** - deploy ARGO-CD on the EKS cluster and set the ingress (NGINX) configmap exposing to the internet. the deployment use a module from the 
 terraform repository (https://registry.terraform.io/modules/squareops/argocd/kubernetes/latest).
 
+**here are some pictures shwoing the instalation:**
+
+Pods deployment:
+![pods](/pictures/eks_pods.gif)
+
+Ingress:
+![ingress](/pictures/eks_ingtress.gif)
+
+VPC
+![VPC](/pictures/eks_vpc.gif)
+
+Argo-cd web:
+![Argo-cd](/pictures/eks_argocd_web.gif)
