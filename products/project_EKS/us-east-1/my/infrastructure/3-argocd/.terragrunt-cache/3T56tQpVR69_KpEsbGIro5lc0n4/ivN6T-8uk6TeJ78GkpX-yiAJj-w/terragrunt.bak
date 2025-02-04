@@ -1,0 +1,52 @@
+terraform {
+  source = "git::https://github.com/DNXLabs/terraform-aws-eks-argocd.git?ref=0.3.5"
+}
+
+locals {
+  env_vars    = (read_terragrunt_config(find_in_parent_folders("env.hcl"))).locals
+  common_tags = (read_terragrunt_config(find_in_parent_folders("common_tags.hcl"))).locals
+  merged_tags = merge(local.env_vars, local.common_tags.common_tags)
+  env         = local.env_vars.short_env
+  region      = (read_terragrunt_config(find_in_parent_folders("region.hcl"))).locals.aws_region
+
+}
+
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+inputs = {
+  enabled          = true
+  create_namespace = true
+  namespace        = "argocd"
+  helm_chart_repo  = "https://argoproj.github.io/argo-helm"
+
+  helm_services = [
+    {
+      name          = "argo-cd"
+      release_name  = "argo-cd"
+      chart_version = "3.3.5" # "7.7.22"
+      settings = {
+        "server" = {
+          "service" = {
+            "type" = "ClusterIP"
+            "port" = 80
+          }
+          "ingress" = {
+            "enabled" = true
+            "https"   = false
+            "paths"   = ["/"]
+            "annotations" = {
+              "ingress.kubernetes.io/group.name"             = "dev-apps-private"
+              "kubernetes.io/ingress.class"                  = "nginx"
+              "nginx.ingress.kubernetes.io/backend-protocol" = "HTTP"
+              "nginx.ingress.kubernetes.io/rewrite-target"   = "/"
+              "nginx.ingress.kubernetes.io/ssl-redirect"     = "false"
+            }
+            "hosts" = ["argocd.issy.site"]
+          }
+        }
+      }
+    }
+  ]
+}

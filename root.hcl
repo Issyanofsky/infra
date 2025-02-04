@@ -37,7 +37,6 @@ generate "provider" {
       EOF
 }
 
-
 generate "backend" {
   path      = "s3-backend.tf"
   if_exists = "overwrite_terragrunt"

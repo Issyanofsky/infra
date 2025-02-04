@@ -1,0 +1,87 @@
+# live/prod/nginx-ingress/terragrunt.hcl
+
+terraform {
+  source = "git::https://github.com/lablabs/terraform-aws-eks-ingress-nginx.git?ref=v1.2.0"
+}
+
+locals {
+  env_vars    = (read_terragrunt_config(find_in_parent_folders("env.hcl"))).locals
+  common_tags = (read_terragrunt_config(find_in_parent_folders("common_tags.hcl"))).locals
+  merged_tags = merge(local.env_vars, local.common_tags.common_tags)
+  env         = local.env_vars.short_env
+  region      = (read_terragrunt_config(find_in_parent_folders("region.hcl"))).locals.aws_region
+}
+
+include "root" {
+  path = find_in_parent_folders("root.hcl")
+}
+
+# Input variables for your module
+inputs = {
+  # AWS region and EKS cluster name
+  aws_region     = local.region
+  cluster_name   = local.env_vars.cluster_name
+
+  # Enable NGINX Ingress controller
+  helm_chart_name       = "ingress-nginx"
+  helm_chart_version    = "4.12.0"
+  helm_repo_url         = "https://kubernetes.github.io/ingress-nginx"
+  helm_release_name     = "ingress-nginx"
+  helm_create_namespace = true
+  helm_namespace        = "ingress-controller"
+  helm_wait             = true
+  helm_timeout          = 300
+  helm_atomic           = true
+  helm_cleanup_on_fail  = true
+  helm_reuse_values     = true
+  helm_skip_crds        = false
+
+  # Ingress NGINX specific settings (optional)
+  settings = {
+    controller = "nginx"
+  }
+
+  # ArgoCD deployment configuration
+  argo_enabled      = true
+  argo_namespace    = "argo"
+  argo_project      = "default"
+  argo_sync_policy  = {}  # Set any sync policy if needed
+  argo_metadata     = {
+    finalizers = [
+      "resources-finalizer.argocd.argoproj.io"
+    ]
+  }
+  argo_info         = [
+    {
+      name  = "terraform"
+      value = "true"
+    }
+  ]
+  argo_spec         = {}  # Add any custom ArgoCD Application spec parameters
+  argo_apiversion   = "argoproj.io/v1alpha1"
+  argo_destination_server = "https://kubernetes.default.svc"
+  argo_helm_enabled = true  # Deploy as ArgoCD Application
+  argo_helm_values   = ""    # Custom values for ArgoCD helm chart if deploying with Helm
+
+  # ArgoCD Ingress configurations
+  ingress_name      = "argocd-ingress"
+  service_name      = "argocd-server"  # Ensure this matches your ArgoCD service name
+  service_namespace = "argo"          # Namespace where ArgoCD is deployed
+
+  rule = [
+    {
+      sub_domain    = "argocd."     # Subdomain for ArgoCD
+      path          = "/"           # Root path for ArgoCD
+      internal_port = "80"          # Internal ArgoCD port
+      external_port = "65535"       # Expose on port 65535
+    }
+  ]
+
+  annotations = {
+    "kubernetes.io/ingress.class"               = "nginx"  # NGINX Ingress class
+    "external-dns.alpha.kubernetes.io/hostname" = "argocd.issy.com"  # Adjust to your DNS
+    "nginx.ingress.kubernetes.io/whitelist-source-range" = "0.0.0.0/0"  # Adjust for IP whitelisting if needed
+  }
+
+  tls = []  # Empty if not using TLS, fill if needed for secure access
+}
